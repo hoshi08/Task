@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class calculate {
-	private static String str;
 
 	public static void main(String args[]) {
 
@@ -18,34 +17,36 @@ public class calculate {
 		File dir = new File(args[0]);
 		File files[] = dir.listFiles();
 
+		String str;
+
+
 		// 処理1
-		// existsはフォルダの存在があるかないかを確認す+qるメソッド
-		if (file.exists())
+		// existsはフォルダの存在があるかないかを確認するメソッド
+		if (!file.exists()) {
 
-		{
-
-			System.out.println("");
-		} else {
 			System.out.println("支店定義ファイルは存在しません");
 		}
 
-		HashMap<String, String> blanchcode = new HashMap<String, String>();
-
 		// Hashmapを宣言する
+		HashMap<String, String> branchname = new HashMap<String, String>();
+
+		// 集計3-2で使用する変数
+		HashMap<String, Long> brnchcodemap = new HashMap<String, Long>();
+
 		try {
 			FileReader fr = new FileReader(file);
 			BufferedReader br = new BufferedReader(fr);
 			while ((str = br.readLine()) != null) {
 				String array[] = str.split(",");
 
-				if (array[0].matches("^\\d{3}")) {
-					System.out.println("");
-				} else {
+				if (!array[0].matches("^\\d{3}")) {
+
 					System.out.println("支店定義ファイルのファーマットが不正です");
 				}
+				// 代入
+				branchname.put(array[0], array[1]);
+				brnchcodemap.put(array[0], 0L);
 
-				blanchcode.put(array[0], array[1]);
-				System.out.println(blanchcode.entrySet());
 			}
 			br.close();
 		} catch (IOException e) {
@@ -53,11 +54,11 @@ public class calculate {
 
 		}
 
-		// 処理2
-		if (file1.exists()) {
+		System.out.println(branchname.entrySet());
+		System.out.println(brnchcodemap.entrySet());
 
-			System.out.println("");
-		} else {
+		// 処理2
+		if (!file1.exists()) {
 
 			System.out.println("商品定義ファイルは存在しません");
 
@@ -71,15 +72,14 @@ public class calculate {
 			while ((str = br.readLine()) != null) {
 				String array[] = str.split(",");
 
-				if (array[0].matches("^[0-9A-Z]{8}$")) {
-					System.out.println("");
-				} else {
+				if (!array[0].matches("^[0-9A-Z]{8}$") || array.length != 2) {
+
 					System.out.println("商品定義ファイルのファーマットが不正です");
+					return;
 				}
 
 				commodity.put(array[0], array[1]);
-				System.out.println(commodity.entrySet());
-
+				brnchcodemap.put(array[0], 0L);
 			}
 
 			br.close();
@@ -89,8 +89,6 @@ public class calculate {
 		}
 
 		// 処理3
-		// ArrayList<String> foo = new ArrayList<String>();
-
 		ArrayList<File> foo = new ArrayList<File>();
 
 		// ArrayListに1つずつ格納処理
@@ -109,24 +107,38 @@ public class calculate {
 
 		}
 
-		// 集計
+
+
+		// 正規表現で取り出したものを取り出す処理
 		for (File f : foo) {
 			System.out.println(f);
 
-			//修正ポイント
-
-		/*	try {
+			try {
 				FileReader fr = new FileReader(f);
 				BufferedReader br = new BufferedReader(fr);
-				while ((br.add = foo.readLine()) != null) {
 
+				ArrayList<String> codelist = new ArrayList<String>();
+
+				while ((str = br.readLine()) != null) {
+					codelist.add(str);
 				}
-				System.out.println(str);
 
-				br.close();
+
+				long rcdValue = Long.parseLong(codelist.get(2));
+
+				long branchVal = brnchcodemap.get(codelist.get(0)) + rcdValue;
+
+
+
+
+				brnchcodemap.put(codelist.get(0), branchVal);
+				System.out.println(branchVal);
+
 			} catch (IOException e) {
 				System.out.println(e);
-			}*/
+			}
+
 		}
+
 	}
 }
