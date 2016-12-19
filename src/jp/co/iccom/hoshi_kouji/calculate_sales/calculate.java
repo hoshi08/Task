@@ -1,16 +1,23 @@
 package jp.co.iccom.hoshi_kouji.calculate_sales;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class calculate {
 
 	public static void main(String args[]) {
-
+		//入力処理
 		File file = new File(args[0], "blanch.lst");
 		File file1 = new File(args[0], "commodity.lst");
 
@@ -18,6 +25,12 @@ public class calculate {
 		File files[] = dir.listFiles();
 
 		String str;
+
+		//出力処理（支店定義）
+		File file2 = new File(args[0], "branch.out");
+		//出力処理（商品定義）
+		File file3 = new File(args[0], "commodity.out");
+
 
 
 		// 処理1
@@ -31,7 +44,7 @@ public class calculate {
 		HashMap<String, String> branchname = new HashMap<String, String>();
 
 		// 集計3-2で使用する変数
-		HashMap<String, Long> brnchcodemap = new HashMap<String, Long>();
+		HashMap<String, Long> branchcodemap = new HashMap<String, Long>();
 
 		try {
 			FileReader fr = new FileReader(file);
@@ -45,7 +58,7 @@ public class calculate {
 				}
 				// 代入
 				branchname.put(array[0], array[1]);
-				brnchcodemap.put(array[0], 0L);
+				branchcodemap.put(array[0], 0L);
 
 			}
 			br.close();
@@ -54,8 +67,11 @@ public class calculate {
 
 		}
 
-		System.out.println(branchname.entrySet());
-		System.out.println(brnchcodemap.entrySet());
+		// System.out.println(branchname.entrySet());
+		// System.out.println(branchcodemap.entrySet());
+
+
+
 
 		// 処理2
 		if (!file1.exists()) {
@@ -65,6 +81,8 @@ public class calculate {
 		}
 
 		HashMap<String, String> commodity = new HashMap<String, String>();
+
+		HashMap<String, Long> commoditycodemap = new HashMap<String, Long>();
 
 		try {
 			FileReader fr = new FileReader(file1);
@@ -79,7 +97,8 @@ public class calculate {
 				}
 
 				commodity.put(array[0], array[1]);
-				brnchcodemap.put(array[0], 0L);
+				commoditycodemap.put(array[0], 0L);
+
 			}
 
 			br.close();
@@ -107,8 +126,6 @@ public class calculate {
 
 		}
 
-
-
 		// 正規表現で取り出したものを取り出す処理
 		for (File f : foo) {
 			System.out.println(f);
@@ -123,22 +140,98 @@ public class calculate {
 					codelist.add(str);
 				}
 
-
 				long rcdValue = Long.parseLong(codelist.get(2));
 
-				long branchVal = brnchcodemap.get(codelist.get(0)) + rcdValue;
+				long branchVal = branchcodemap.get(codelist.get(0)) + rcdValue;
 
+				long commodityVal = commoditycodemap.get(codelist.get(1)) + rcdValue;
 
+				branchcodemap.put(codelist.get(0), branchVal);
+				commoditycodemap.put(codelist.get(1), commodityVal);
 
-
-				brnchcodemap.put(codelist.get(0), branchVal);
-				System.out.println(branchVal);
+				// System.out.println(branchVal);
+				// System.out.println(commodityVal);
+				// System.out.println(branchcodemap.entrySet());
+				// System.out.println(commoditycodemap.entrySet());
 
 			} catch (IOException e) {
 				System.out.println(e);
 			}
-
 		}
+
+
+		// 降順に並べ替え
+		// List 生成 (ソート用)
+		//支店定義出力
+		List<Map.Entry<String, Long>> entries = new ArrayList<Map.Entry<String, Long>>(branchcodemap.entrySet());
+		Collections.sort(entries, new Comparator<Map.Entry<String, Long>>() {
+
+			@Override
+			public int compare(Entry<String, Long> entry1, Entry<String, Long> entry2) {
+
+				// 自動生成されたメソッド・スタブ
+				return ((Long) entry2.getValue()).compareTo((Long) entry1.getValue());
+
+			}
+		});
+		// 内容を表示
+
+		for (Entry<String, Long> s : entries) {
+			System.out.println(s.getKey() + ","  + branchname.get(s.getKey()) +  "," + s.getValue());
+		}
+
+		try {
+			FileWriter fi = new FileWriter(file2);
+			BufferedWriter bw = new BufferedWriter(fi);
+
+			String separator = System.getProperty("line.separator");
+
+			for (Entry<String, Long> s : entries) {
+				bw.write((s.getKey() + ","  + branchname.get(s.getKey()) +  "," + s.getValue()) + separator);
+			}
+			bw.close();
+
+
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+
+
+		//商品定義出力
+				List<Map.Entry<String, Long>> entries1 = new ArrayList<Map.Entry<String, Long>>(commoditycodemap.entrySet());
+				Collections.sort(entries1, new Comparator<Map.Entry<String, Long>>() {
+
+					@Override
+					public int compare(Entry<String, Long> entry1, Entry<String, Long> entry2) {
+
+						// 自動生成されたメソッド・スタブ
+						return ((Long) entry2.getValue()).compareTo((Long) entry1.getValue());
+
+					}
+				});
+				// 内容を表示
+
+				for (Entry<String, Long> s : entries1) {
+					System.out.println(s.getKey() + ","  + commodity.get(s.getKey()) +  "," + s.getValue());
+				}
+
+				try {
+					FileWriter fi = new FileWriter(file3);
+					BufferedWriter bw = new BufferedWriter(fi);
+
+					String separator = System.getProperty("line.separator");
+
+					for (Entry<String, Long> s : entries1) {
+						bw.write((s.getKey() + ","  + commodity.get(s.getKey()) +  "," + s.getValue()) + separator);
+					}
+					bw.close();
+
+
+				} catch (IOException e) {
+					System.out.println(e);
+				}
 
 	}
 }
+
+
