@@ -19,7 +19,7 @@ public class calculate {
 	public static void main(String args[]) {
 
 		// 支店定義ファイル
-		File blanchfileIn = new File(args[0], "blanch.lst");
+		File branchfileIn = new File(args[0], "blanch.lst");
 
 		// 商品定義ファイル
 		File commodityfileIn = new File(args[0], "commodity.lst");
@@ -31,14 +31,14 @@ public class calculate {
 		String str;
 
 		// 出力処理（支店定義）
-		File blanchfileOut = new File(args[0], "branch.out");
+		File branchfileOut = new File(args[0], "branch.out");
 
 		// 出力処理（商品定義）
 		File commodityfileOut = new File(args[0], "commodity.out");
 
 		// 処理1
 		// existsはフォルダの存在があるかないかを確認するメソッド
-		if (!blanchfileIn.exists()) {
+		if (!branchfileIn.exists()) {
 			System.out.println("支店定義ファイルは存在しません");
 			return;
 		}
@@ -47,29 +47,25 @@ public class calculate {
 		HashMap<String, String> branchNameMap = new HashMap<String, String>();
 
 		// 集計3-2で使用する変数
-		HashMap<String, Long> branchCodeMap = new HashMap<String, Long>();
+		HashMap<String, Long> branchSalesMap = new HashMap<String, Long>();
 
 		BufferedReader br = null;
 
 		try {
-			FileReader fr = new FileReader(blanchfileIn);
+			FileReader fr = new FileReader(branchfileIn);
 			br = new BufferedReader(fr);
 			while ((str = br.readLine()) != null) {
 				String array[] = str.split(",");
 
-				if (array.length != 2) {
-					System.out.println("支店定義ファイルのファーマットが不正です");
-					return;
-				}
+				if (array.length != 2 && (array[0].matches("^\\d{3}"))) {
 
-				if (!array[0].matches("^\\d{3}")) {
 					System.out.println("支店定義ファイルのファーマットが不正です");
 					return;
 				}
 
 				// 代入
 				branchNameMap.put(array[0], array[1]);
-				branchCodeMap.put(array[0], 0L);
+				branchSalesMap.put(array[0], 0L);
 			}
 
 		} catch (IOException e) {
@@ -88,13 +84,13 @@ public class calculate {
 		}
 
 		// 処理2
-		if (!commodityfileIn.exists()) {
+		if (commodityfileIn.exists()) {
 			System.out.println("商品定義ファイルは存在しません");
 			return;
 		}
 
 		HashMap<String, String> commodityNameMap = new HashMap<String, String>();
-		HashMap<String, Long> commodityCodeMap = new HashMap<String, Long>();
+		HashMap<String, Long> commoditySalesMap = new HashMap<String, Long>();
 
 		try {
 			FileReader fr = new FileReader(commodityfileIn);
@@ -113,7 +109,7 @@ public class calculate {
 				}
 
 				commodityNameMap.put(array[0], array[1]);
-				commodityCodeMap.put(array[0], 0L);
+				commoditySalesMap.put(array[0], 0L);
 			}
 
 		} catch (IOException a) {
@@ -130,32 +126,62 @@ public class calculate {
 			}
 		}
 
-		// 処理3
 		ArrayList<File> rcdFaileList = new ArrayList<File>();
 
 		// ArrayListに1つずつ格納処理
 		for (File f : Namefiles) {
+
 			// rcdファイルかどうかの判定
 			if (f.getName().matches("^\\d{8}.rcd$")) {
 				rcdFaileList.add(f);
-				 // 連番チェック
-				 for(int i = 0; );
 
-				 (rcdFaileList Current =  );{
-
+			}
+		}
 
 
 
-							 while ((Current = rcdFaileList.readLine()) != null) {
-				 }
-				 System.out.println(fi);
+
+
+
+			for(int i = 0; i < rcdFaileList.size(); i++){
+
+
 
 			}
 
-		}
+			//		}
+//
+//		while ((str = br.readLine()) != null) {
+//			forrcdFaileList..s
+//
 
+
+
+//		for(int i = 0; i < rcdFaileList.size(); i++){
+//
+//			if(rcdFaileList.)
+//
+//
+//		}
+//
+//			if()
+
+
+		// ArrayList rcdcode = new ArrayList();
+		// // // 連番チェック
+		//
+		// for (int i = 0; i < rcdcode.size(); i++){
+		// rcdcode.add(rcdFaileList);
+		// rcdcode = rcdcode.substring;
+		//
+		//
+		//
+		// }
+		//
+
+		// 処理3
 		// 正規表現で取り出したものを取り出す処理
-		for (File f :rcdFaileList) {
+		for (File f : rcdFaileList) {
 			// System.out.println(f);
 
 			try {
@@ -167,15 +193,44 @@ public class calculate {
 				while ((str = br.readLine()) != null) {
 					codelist.add(str);
 				}
+				if (branchSalesMap.containsKey(codelist.get(0))) {
+					System.out.println("支店コードが不正です");
+					return;
+				}
+				if (commoditySalesMap.containsKey(codelist.get(1))) {
+					System.out.println("商品コードが不正です");
+					return;
+				}
+
+				if (codelist.size() != 3) {
+					System.out.println("フォーマットが不正です");
+					return;
+				}
 
 				long rcdValue = Long.parseLong(codelist.get(2));
 
-				long branchVal = branchCodeMap.get(codelist.get(0)) + rcdValue;
+				if (rcdValue > 9999999999L) {
+					System.out.println("合計金額が10桁を超えました");
+					return;
 
-				long commodityVal = commodityCodeMap.get(codelist.get(1)) + rcdValue;
+				}
 
-				branchCodeMap.put(codelist.get(0), branchVal);
-				commodityCodeMap.put(codelist.get(1), commodityVal);
+				long branchVal = branchSalesMap.get(codelist.get(0)) + rcdValue;
+
+				if (branchVal > 9999999999L) {
+					System.out.println("合計金額が10桁を超えました");
+					return;
+				}
+
+				long commodityVal = commoditySalesMap.get(codelist.get(1)) + rcdValue;
+
+				if (commodityVal > 9999999999L) {
+					System.out.println("合計金額が10桁を超えました");
+					return;
+				}
+
+				branchSalesMap.put(codelist.get(0), branchVal);
+				commoditySalesMap.put(codelist.get(1), commodityVal);
 
 			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
@@ -194,8 +249,7 @@ public class calculate {
 
 		// 降順に並べ替え List 生成 (ソート用)
 		// 支店定義出力
-		List<Map.Entry<String, Long>> branchEntries = new ArrayList<Map.Entry<String, Long>>(
-				branchCodeMap.entrySet());
+		List<Map.Entry<String, Long>> branchEntries = new ArrayList<Map.Entry<String, Long>>(branchSalesMap.entrySet());
 		Collections.sort(branchEntries, new Comparator<Map.Entry<String, Long>>() {
 
 			@Override
@@ -213,7 +267,7 @@ public class calculate {
 		}
 
 		try {
-			FileWriter fi = new FileWriter(blanchfileOut);
+			FileWriter fi = new FileWriter(branchfileOut);
 			BufferedWriter bw = new BufferedWriter(fi);
 
 			String separator = System.getProperty("line.separator");
@@ -229,7 +283,7 @@ public class calculate {
 
 		// 商品定義出力
 		List<Map.Entry<String, Long>> commodityEntries = new ArrayList<Map.Entry<String, Long>>(
-				commodityCodeMap.entrySet());
+				commoditySalesMap.entrySet());
 		Collections.sort(commodityEntries, new Comparator<Map.Entry<String, Long>>() {
 
 			@Override
