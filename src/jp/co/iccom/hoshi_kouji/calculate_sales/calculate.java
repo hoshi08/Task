@@ -55,7 +55,7 @@ public class calculate {
 			FileReader fr = new FileReader(branchfileIn);
 			br = new BufferedReader(fr);
 			while ((str = br.readLine()) != null) {
-				String array[] = str.split(",");
+				String[] array = str.split(",");
 
 				if (array.length != 2 && (array[0].matches("^\\d{3}"))) {
 
@@ -84,7 +84,7 @@ public class calculate {
 		}
 
 		// 処理2
-		if (commodityfileIn.exists()) {
+		if (!commodityfileIn.exists()) {
 			System.out.println("商品定義ファイルは存在しません");
 			return;
 		}
@@ -125,59 +125,42 @@ public class calculate {
 				return;
 			}
 		}
-
 		ArrayList<File> rcdFaileList = new ArrayList<File>();
-
 		// ArrayListに1つずつ格納処理
-		for (File f : Namefiles) {
 
-			// rcdファイルかどうかの判定
-			if (f.getName().matches("^\\d{8}.rcd$")) {
-				rcdFaileList.add(f);
-
+		// for (File f : Namefiles) {
+		for (int i = 0; i < Namefiles.length; i++) {
+			if (Namefiles[i].isFile()) {
+				// System.out.println("[F]" + Namefiles[i].getName());
+			}
+			if (Namefiles[i].getName().matches("^\\d{8}.rcd$")) {
+				rcdFaileList.add(Namefiles[i]);
+				//System.out.println(rcdFaileList);
 			}
 		}
 
+		/*
+		 * rcdファイルかどうかの判定 if (f.getName().matches("^\\d{8}.rcd$")) {
+		 * rcdFaileList.add(f);
+		 */
 
+		/*
+		 * ■連番チェック 「1つめのデータ」と「2つめのデータ」を比較した場合、
+		 * 「2つめのデータ」に対して「1つめのデータ」の差分が「1小さい」場合は正常、 差分が「1小さい」以外の場合はエラーを表示する。
+		 */
 
+		for (int i = 0; i < rcdFaileList.size(); i++) {
+			String st = rcdFaileList.get(i).getName();
 
+			String ss = st.substring(0, 8);
 
+			int Serial = Integer.parseInt(ss);
 
-			for(int i = 0; i < rcdFaileList.size(); i++){
-
-
-
+			//System.out.println(Serial);
+			if (i != Serial - 1) {
+				System.out.println("売り上げファイル名が連番になっていません");
 			}
-
-			//		}
-//
-//		while ((str = br.readLine()) != null) {
-//			forrcdFaileList..s
-//
-
-
-
-//		for(int i = 0; i < rcdFaileList.size(); i++){
-//
-//			if(rcdFaileList.)
-//
-//
-//		}
-//
-//			if()
-
-
-		// ArrayList rcdcode = new ArrayList();
-		// // // 連番チェック
-		//
-		// for (int i = 0; i < rcdcode.size(); i++){
-		// rcdcode.add(rcdFaileList);
-		// rcdcode = rcdcode.substring;
-		//
-		//
-		//
-		// }
-		//
+		}
 
 		// 処理3
 		// 正規表現で取り出したものを取り出す処理
@@ -192,21 +175,29 @@ public class calculate {
 
 				while ((str = br.readLine()) != null) {
 					codelist.add(str);
-				}
-				if (branchSalesMap.containsKey(codelist.get(0))) {
-					System.out.println("支店コードが不正です");
-					return;
-				}
-				if (commoditySalesMap.containsKey(codelist.get(1))) {
-					System.out.println("商品コードが不正です");
-					return;
-				}
 
-				if (codelist.size() != 3) {
-					System.out.println("フォーマットが不正です");
-					return;
-				}
 
+					// ------------------------------------
+					if (!branchSalesMap.containsKey(codelist.get(0))) {
+
+						System.out.println(branchSalesMap.entrySet());
+						System.out.println(codelist.get(0));
+						System.out.println("支店コードが不正です");
+						return;
+					}
+//					 if (!commoditySalesMap.containsKey(codelist.get(1))) {
+//					 System.out.println(commoditySalesMap.entrySet());
+//					 System.out.println("商品コードが不正です");
+//					 return;
+//					 }
+
+					if (codelist.size() != 3) {
+
+						System.out.println("フォーマットが不正です");
+						return;
+					}
+					// ------------------------------------
+				}
 				long rcdValue = Long.parseLong(codelist.get(2));
 
 				if (rcdValue > 9999999999L) {
@@ -263,7 +254,7 @@ public class calculate {
 
 		// 内容を表示
 		for (Entry<String, Long> s : branchEntries) {
-			System.out.println(s.getKey() + "," + branchNameMap.get(s.getKey()) + "," + s.getValue());
+			//System.out.println(s.getKey() + "," + branchNameMap.get(s.getKey()) + "," + s.getValue());
 		}
 
 		try {
@@ -297,7 +288,7 @@ public class calculate {
 		// 内容を表示
 
 		for (Entry<String, Long> s : commodityEntries) {
-			System.out.println(s.getKey() + "," + commodityNameMap.get(s.getKey()) + "," + s.getValue());
+			//System.out.println(s.getKey() + "," + commodityNameMap.get(s.getKey()) + "," + s.getValue());
 		}
 
 		try {
