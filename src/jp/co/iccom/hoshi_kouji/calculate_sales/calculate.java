@@ -42,7 +42,6 @@ public class calculate {
 			System.out.println("支店定義ファイルは存在しません");
 			return;
 		}
-
 		// Hashmapを宣言する
 		HashMap<String, String> branchNameMap = new HashMap<String, String>();
 
@@ -56,6 +55,7 @@ public class calculate {
 			br = new BufferedReader(fr);
 			while ((str = br.readLine()) != null) {
 				String[] array = str.split(",");
+				System.out.println(str);
 
 				if (array.length != 2 && (array[0].matches("^\\d{3}"))) {
 
@@ -135,14 +135,9 @@ public class calculate {
 			}
 			if (Namefiles[i].getName().matches("^\\d{8}.rcd$")) {
 				rcdFaileList.add(Namefiles[i]);
-				//System.out.println(rcdFaileList);
+				// System.out.println(rcdFaileList);
 			}
 		}
-
-		/*
-		 * rcdファイルかどうかの判定 if (f.getName().matches("^\\d{8}.rcd$")) {
-		 * rcdFaileList.add(f);
-		 */
 
 		/*
 		 * ■連番チェック 「1つめのデータ」と「2つめのデータ」を比較した場合、
@@ -156,7 +151,7 @@ public class calculate {
 
 			int Serial = Integer.parseInt(ss);
 
-			//System.out.println(Serial);
+			// System.out.println(Serial);
 			if (i != Serial - 1) {
 				System.out.println("売り上げファイル名が連番になっていません");
 			}
@@ -176,7 +171,6 @@ public class calculate {
 				while ((str = br.readLine()) != null) {
 					codelist.add(str);
 
-
 					// ------------------------------------
 					if (!branchSalesMap.containsKey(codelist.get(0))) {
 
@@ -185,17 +179,17 @@ public class calculate {
 						System.out.println("支店コードが不正です");
 						return;
 					}
-//					 if (!commoditySalesMap.containsKey(codelist.get(1))) {
-//					 System.out.println(commoditySalesMap.entrySet());
-//					 System.out.println("商品コードが不正です");
-//					 return;
-//					 }
+					// if (!commoditySalesMap.containsKey(codelist.get(1))) {
+					// System.out.println(commoditySalesMap.entrySet());
+					// System.out.println("商品コードが不正です");
+					// return;
+					// }
 
-					if (codelist.size() != 3) {
-
-						System.out.println("フォーマットが不正です");
-						return;
-					}
+					// if (codelist.size() != 3) {
+					//
+					// System.out.println("フォーマットが不正です");
+					// return;
+					// }
 					// ------------------------------------
 				}
 				long rcdValue = Long.parseLong(codelist.get(2));
@@ -254,7 +248,8 @@ public class calculate {
 
 		// 内容を表示
 		for (Entry<String, Long> s : branchEntries) {
-			//System.out.println(s.getKey() + "," + branchNameMap.get(s.getKey()) + "," + s.getValue());
+			// System.out.println(s.getKey() + "," +
+			// branchNameMap.get(s.getKey()) + "," + s.getValue());
 		}
 
 		try {
@@ -288,7 +283,8 @@ public class calculate {
 		// 内容を表示
 
 		for (Entry<String, Long> s : commodityEntries) {
-			//System.out.println(s.getKey() + "," + commodityNameMap.get(s.getKey()) + "," + s.getValue());
+			// System.out.println(s.getKey() + "," +
+			// commodityNameMap.get(s.getKey()) + "," + s.getValue());
 		}
 
 		try {
